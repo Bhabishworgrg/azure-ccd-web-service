@@ -11,20 +11,30 @@ def render_homepage():
 
 @app.route('/service', methods=['GET'])
 def convert_miles_kilometers():
-    CONVERSION_FACTOR = 1.60934
+    MILE_KM_FACTOR = 1.60934
+    MILE_YARD_FACTOR = 1760
+    KM_YARD_FACTOR = 1093.61
 
-    if 'miles' in request.args and 'kilometers' in request.args:
+    if len(request.args) > 1:
         return jsonify({ 'error': 'Service only takes one input' })
 
     elif 'miles' in request.args:
-        value = float(request.args.get('miles'))
-        result = round(value * CONVERSION_FACTOR, 2)    
-        return jsonify({ 'miles': value, 'kilometers': result })
+        miles = float(request.args.get('miles'))
+        kilometers = round(miles * MILE_KM_FACTOR, 2)
+        yards = round(miles * MILE_YARD_FACTOR, 2)
+        return jsonify({ 'miles': miles, 'kilometers': kilometers, 'yards': yards })
     
     elif 'kilometers' in request.args:
-        value = float(request.args.get('kilometers'))
-        result = round(value / CONVERSION_FACTOR, 2)
-        return jsonify({ 'kilometers': value, 'miles': result })
+        kilometers = float(request.args.get('kilometers'))
+        miles = round(kilometers / MILE_KM_FACTOR, 2)
+        yards = round(kilometers * KM_YARD_FACTOR, 2)
+        return jsonify({ 'miles': miles, 'kilometers': kilometers, 'yards': yards })
+
+    elif 'yards' in request.args:
+        yards = float(request.args.get('yards'))
+        miles = round(yards / MILE_YARD_FACTOR, 2)
+        kilometers = round(yards / KM_YARD_FACTOR, 2)
+        return jsonify({ 'miles': miles, 'kilometers': kilometers, 'yards': yards })
 
     else:
         return jsonify({ 'error': 'No input found' })
